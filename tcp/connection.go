@@ -17,7 +17,7 @@
 package tcp
 
 import (
-	"crypto/x509"
+	"gitee.com/zhaochuninhefei/gmgo/x509"
 	"github.com/openziti/transport/v2"
 	"net"
 )

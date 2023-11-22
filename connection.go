@@ -17,7 +17,7 @@
 package transport
 
 import (
-	"crypto/x509"
+	"gitee.com/zhaochuninhefei/gmgo/x509"
 	"net"
 )
 

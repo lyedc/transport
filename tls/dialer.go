@@ -17,7 +17,7 @@
 package tls
 
 import (
-	"crypto/tls"
+	"gitee.com/zhaochuninhefei/gmgo/gmtls"
 	"github.com/michaelquigley/pfxlog"
 	"github.com/openziti/identity"
 	"github.com/openziti/transport/v2"
@@ -32,7 +32,7 @@ func Dial(destination, name string, i *identity.TokenId, timeout time.Duration, 
 
 	tlsCfg := i.ClientTLSConfig().Clone()
 	tlsCfg.NextProtos = protocols
-	socket, err := tls.DialWithDialer(&net.Dialer{Timeout: timeout}, "tcp", destination, tlsCfg)
+	socket, err := gmtls.DialWithDialer(&net.Dialer{Timeout: timeout}, "tcp", destination, tlsCfg)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func DialWithLocalBinding(a address, name, localBinding string, i *identity.Toke
 		tlsCfg.NextProtos = append(tlsCfg.NextProtos, protocols...)
 	}
 
-	var tlsConn *tls.Conn
+	var tlsConn *gmtls.Conn
 
 	if proxyConf != nil && proxyConf.Type != transport.ProxyTypeNone {
 		if proxyConf.Type == transport.ProxyTypeHttpConnect {
@@ -76,12 +76,12 @@ func DialWithLocalBinding(a address, name, localBinding string, i *identity.Toke
 				return nil, err
 			}
 
-			tlsConn = tls.Client(conn, tlsCfg)
+			tlsConn = gmtls.Client(conn, tlsCfg)
 		} else {
 			return nil, errors.Errorf("unsupported proxy type %s", string(proxyConf.Type))
 		}
 	} else {
-		tlsConn, err = tls.DialWithDialer(dialer, "tcp", destination, tlsCfg)
+		tlsConn, err = gmtls.DialWithDialer(dialer, "tcp", destination, tlsCfg)
 		if err != nil {
 			return nil, err
 		}

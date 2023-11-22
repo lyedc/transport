@@ -18,8 +18,8 @@ package tls
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
+	"gitee.com/zhaochuninhefei/gmgo/gmtls"
 	"github.com/michaelquigley/pfxlog"
 	"github.com/openziti/identity"
 	"github.com/openziti/transport/v2"
@@ -96,7 +96,7 @@ func (self *tlsListener) tlsAccept(conn transport.Conn) {
 // ListenTLS returns net.Listener that is attached to shared listener with protocols (ALPN)
 // specified by config.NextProtos
 // It can be used in http.Server or other standard components
-func ListenTLS(bindAddress, name string, config *tls.Config) (net.Listener, error) {
+func ListenTLS(bindAddress, name string, config *gmtls.Config) (net.Listener, error) {
 	log := pfxlog.ContextLogger(name + "/" + Type + ":" + bindAddress).Entry
 
 	l := &tlsListener{}
@@ -122,7 +122,7 @@ func ListenTLS(bindAddress, name string, config *tls.Config) (net.Listener, erro
 type protocolHandler struct {
 	name     string
 	listener *sharedListener
-	tls      *tls.Config
+	tls      *gmtls.Config
 	acceptF  func(conn transport.Conn)
 	closed   atomic.Bool
 }
@@ -147,13 +147,13 @@ func registerWithSharedListener(bindAddress string, acc *protocolHandler) error 
 	if !found {
 		sl.log = pfxlog.ContextLogger(Type + ":" + bindAddress).Entry
 
-		sl.tlsCfg = &tls.Config{
+		sl.tlsCfg = &gmtls.Config{
 			GetConfigForClient: sl.getConfig,
 		}
 
 		sl.ctx, sl.done = context.WithCancel(context.Background())
 		sl.handlers = make(map[string]*protocolHandler)
-		sock, err := tls.Listen("tcp", bindAddress, sl.tlsCfg)
+		sock, err := gmtls.Listen("tcp", bindAddress, sl.tlsCfg)
 		if err != nil {
 			sharedListeners.Delete(bindAddress)
 			return err
@@ -188,7 +188,7 @@ func registerWithSharedListener(bindAddress string, acc *protocolHandler) error 
 type sharedListener struct {
 	log      logrus.FieldLogger
 	address  string
-	tlsCfg   *tls.Config
+	tlsCfg   *gmtls.Config
 	mtx      sync.RWMutex
 	handlers map[string]*protocolHandler // proto -> protocolHandler
 	ctx      context.Context
@@ -196,7 +196,7 @@ type sharedListener struct {
 	sock     net.Listener
 }
 
-func (self *sharedListener) processConn(conn *tls.Conn) {
+func (self *sharedListener) processConn(conn *gmtls.Conn) {
 	log := self.log.WithField("remote", conn.RemoteAddr().String())
 
 	if tcpConn, ok := conn.NetConn().(*net.TCPConn); ok {
@@ -246,13 +246,13 @@ func (self *sharedListener) runAccept() {
 			return
 		}
 
-		conn := c.(*tls.Conn)
+		conn := c.(*gmtls.Conn)
 
 		go self.processConn(conn)
 	}
 }
 
-func (self *sharedListener) getConfig(info *tls.ClientHelloInfo) (*tls.Config, error) {
+func (self *sharedListener) getConfig(info *gmtls.ClientHelloInfo) (*gmtls.Config, error) {
 	log := self.log.WithField("client", info.Conn.RemoteAddr())
 
 	protos := info.SupportedProtos

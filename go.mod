@@ -2,7 +2,13 @@ module github.com/openziti/transport/v2
 
 go 1.19
 
+replace (
+	github.com/openziti/identity v1.0.67 => github.com/lyedc/identity v1.0.70
+	gitee.com/zhaochuninhefei/gmgo v0.0.30 => github.com/lyedc/gmgo v0.0.1
+)
+
 require (
+	gitee.com/zhaochuninhefei/gmgo v0.0.30
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.1
 	github.com/michaelquigley/pfxlog v0.6.10

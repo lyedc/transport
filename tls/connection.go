@@ -17,12 +17,12 @@
 package tls
 
 import (
-	"crypto/tls"
-	"crypto/x509"
+	"gitee.com/zhaochuninhefei/gmgo/gmtls"
+	"gitee.com/zhaochuninhefei/gmgo/x509"
 	"github.com/openziti/transport/v2"
 )
 
-func NewConnection(detail *transport.ConnectionDetail, conn *tls.Conn) *Connection {
+func NewConnection(detail *transport.ConnectionDetail, conn *gmtls.Conn) *Connection {
 	return &Connection{
 		detail: detail,
 		Conn:   conn,
@@ -31,7 +31,7 @@ func NewConnection(detail *transport.ConnectionDetail, conn *tls.Conn) *Connecti
 
 type Connection struct {
 	detail *transport.ConnectionDetail
-	*tls.Conn
+	*gmtls.Conn
 }
 
 func (self *Connection) Detail() *transport.ConnectionDetail {
