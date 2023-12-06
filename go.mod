@@ -5,6 +5,7 @@ go 1.19
 replace (
 	github.com/openziti/identity v1.0.67 => github.com/lyedc/identity v1.0.70
 	gitee.com/zhaochuninhefei/gmgo v0.0.30 => github.com/lyedc/gmgo v0.0.1
+	github.com/openziti/dilithium v0.3.3 => github.com/lyedc/dilithium v0.3.4
 )
 
 require (
