@@ -284,6 +284,7 @@ github.com/lunixbochs/vtclean v1.0.0/go.mod h1:pHhQNgMf3btfWnGBVipUOjRYhoOsdGqdm
 github.com/lyedc/dilithium v0.3.4/go.mod h1:Ke29QjSjfhrtWutGOU9qP2fXrgy2wA+qVpf05vnIPhM=
 github.com/lyedc/gmgo v0.0.1/go.mod h1:6X1AJCBrDBR4ntGjRuXuoGaQWVBCyTws5mwgr/QbQro=
 github.com/lyedc/identity v1.0.70/go.mod h1:CzdwnYtFl7C0gSk2dPihY0f9J+u3H2Kypeql7Ud0ybI=
+github.com/lyedc/websocket v1.5.2/go.mod h1:YJTwA5YsKNBSPluGL0qt94R/Bbg5TrdSHRVsJByREfc=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.5/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
 github.com/mailru/easyjson v0.0.0-20190312143242-1de009706dbe/go.mod h1:C1wdFJiN94OJF2b5HbByQZoLdCWB1Yqtg26g4irojpc=

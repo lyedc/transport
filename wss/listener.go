@@ -17,15 +17,15 @@
 package wss
 
 import (
-	"crypto/tls"
+	"gitee.com/zhaochuninhefei/gmgo/gmhttp"
+	"gitee.com/zhaochuninhefei/gmgo/gmtls"
+	"gitee.com/zhaochuninhefei/gmgo/mux"
 	"io"
-	"net/http"
 	"time"
 
 	"github.com/openziti/identity"
 	transporttls "github.com/openziti/transport/v2/tls"
 
-	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/michaelquigley/pfxlog"
 	"github.com/openziti/transport/v2"
@@ -38,9 +38,9 @@ var (
 
 	browZerRuntimeSdkSuites = []uint16{
 		//vv WASM-based TLS1.3 suites
-		tls.TLS_AES_256_GCM_SHA384,
-		tls.TLS_CHACHA20_POLY1305_SHA256,
-		tls.TLS_AES_128_GCM_SHA256,
+		gmtls.TLS_AES_256_GCM_SHA384,
+		gmtls.TLS_CHACHA20_POLY1305_SHA256,
+		gmtls.TLS_AES_128_GCM_SHA256,
 		//^^
 	}
 )
@@ -55,7 +55,7 @@ type wssListener struct {
 /**
  *	Accept acceptF HTTP connection, and upgrade it to a websocket suitable for communication between ziti-browzer-runtime and Ziti Edge Router
  */
-func (listener *wssListener) handleWebsocket(w http.ResponseWriter, r *http.Request) {
+func (listener *wssListener) handleWebsocket(w gmhttp.ResponseWriter, r *gmhttp.Request) {
 	log := listener.log
 	log.Info("entered")
 
@@ -71,7 +71,7 @@ func (listener *wssListener) handleWebsocket(w http.ResponseWriter, r *http.Requ
 		listener.ctr++
 
 		cfg := listener.cfg.Identity.ServerTLSConfig()
-		cfg.ClientAuth = tls.RequireAndVerifyClientCert
+		cfg.ClientAuth = gmtls.RequireAndVerifyClientCert
 
 		// This is technically not correct but will help get work moving forward.
 		// Instead of using ClientCAs we should rely on VerifyPeerCertificate
@@ -85,7 +85,7 @@ func (listener *wssListener) handleWebsocket(w http.ResponseWriter, r *http.Requ
 			cfg: listener.cfg,
 		}
 
-		tlsConn := tls.Server(connWrapper, cfg)
+		tlsConn := gmtls.Server(connWrapper, cfg)
 		if err = tlsConn.Handshake(); err != nil {
 			log.WithError(err).Error("unable to establish tls over websocket")
 			_ = c.Close()
@@ -146,17 +146,16 @@ func startHttpServer(log *logrus.Entry, bindAddress string, cfg *Config, _ strin
 	upgrader.ReadBufferSize = cfg.ReadBufferSize
 	upgrader.WriteBufferSize = cfg.WriteBufferSize
 	upgrader.EnableCompression = cfg.EnableCompression
-	upgrader.CheckOrigin = func(r *http.Request) bool { return true } // Allow all origins
+	upgrader.CheckOrigin = func(r *gmhttp.Request) bool { return true } // Allow all origins
 
 	router := mux.NewRouter()
-
 	router.HandleFunc("/ws", listener.handleWebsocket).Methods("GET")
 
 	tlsConfig := cfg.Identity.ServerTLSConfig()
-	tlsConfig.ClientAuth = tls.NoClientCert
+	tlsConfig.ClientAuth = gmtls.NoClientCert
 	tlsConfig.NextProtos = append(tlsConfig.NextProtos, "h2", "http/1.1")
 
-	httpServer := &http.Server{
+	httpServer := &gmhttp.Server{
 		Addr:         bindAddress,
 		WriteTimeout: cfg.WriteTimeout,
 		ReadTimeout:  cfg.ReadTimeout,
